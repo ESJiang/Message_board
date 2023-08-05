@@ -39,9 +39,8 @@ app.get("/messages/:id", (req, res) => {
 
 //POST: 添加留言
 app.post("/messages", (req, res) => {
-    if (!handleParameters(req, res)) {
-        return;
-    }
+    if (!handleParameters(req, res)) return;
+
     const newMessage = {
         id: messages.length + 1,
         name: req.body.name,
@@ -66,9 +65,7 @@ app.delete("/messages/:id", (req, res) => {
 
 //Update:更新留言
 app.put("/messages/:id", (req, res) => {
-    if (!handleParameters(req, res)) {
-        return;
-    }
+    if (!handleParameters(req, res)) return;
     const messageId = parseInt(req.params.id);
     const messageToUpdate = getMessageById(messageId);
     if (messageToUpdate) {
