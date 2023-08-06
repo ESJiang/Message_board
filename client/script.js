@@ -1,15 +1,15 @@
-function judegeContinue(target) {
+function judgeContinue(target) {
     const judgeDelete = prompt(`Hi ${target.previousElementSibling.previousElementSibling.textContent}! Are you sure to delete "${target.previousElementSibling.textContent}" ? Y/N`);
-    if (judgeDelete === null || !(judgeDelete.toLowerCase() === "y")) return false;
+    if (judgeDelete === null || !(judgeDelete.trim().toLowerCase() === "y")) return false;
     return true;
 }
 
 // 删除msg
 async function handleDelete() {
     try {
-        if (!judegeContinue(this)) return;
+        if (!judgeContinue(this)) return;
         const response = await axios.delete(`http://localhost:8080/messages/${this.getAttribute("data-id")}`);
-        response.status === 201 ? getMessages() : null;
+        if (response.status === 201) getMessages();
     } catch (error) {
         console.error("Error deleting message:", error);
     }
@@ -77,8 +77,8 @@ async function getMessages() {
 }
 
 // post message
-async function handleSubmitMessage(e) {
-    e.preventDefault();
+async function handleSubmitMessage(event) {
+    event.preventDefault();
     try {
         const response = await axios.post(
             "http://localhost:8080/messages",
@@ -94,8 +94,7 @@ async function handleSubmitMessage(e) {
         );
         if (response.status === 201) {
             getMessages();
-            this.children[0].value = "";
-            this.children[1].value = "";
+            this.reset();
         }
     } catch (error) {
         console.error("Error occurred while submitting message:", error);
