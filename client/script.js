@@ -1,8 +1,13 @@
+function judegeContinue(target) {
+    const judgeDelete = prompt(`Hi ${target.previousElementSibling.previousElementSibling.textContent}! Are you sure to delete "${target.previousElementSibling.textContent}" ? Y/N`);
+    if (judgeDelete === null || !(judgeDelete.toLowerCase() === "y")) return false;
+    return true;
+}
+
 // 删除msg
 async function handleDelete() {
     try {
-        const judgeDelete = prompt(`Hi ${this.previousElementSibling.previousElementSibling.textContent}! Are you sure to delete "${this.previousElementSibling.textContent}" ? Y/N`);
-        if (!(judgeDelete.toLowerCase() === "y")) return;
+        if (!judegeContinue(this)) return;
         const response = await axios.delete(`http://localhost:8080/messages/${this.getAttribute("data-id")}`);
         response.status === 201 ? getMessages() : null;
     } catch (error) {
