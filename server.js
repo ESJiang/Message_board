@@ -40,7 +40,6 @@ app.get("/messages/:id", (req, res) => {
 //POST: 添加留言
 app.post("/messages", (req, res) => {
     if (!handleParameters(req, res)) return;
-
     const newMessage = {
         id: messages.length + 1,
         name: req.body.name,

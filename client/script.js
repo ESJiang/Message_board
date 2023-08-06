@@ -3,7 +3,6 @@ function judgeContinue(target) {
     if (judgeDelete === null || !(judgeDelete.trim().toLowerCase() === "y")) return false;
     return true;
 }
-
 // 删除msg
 async function handleDelete() {
     try {
@@ -14,7 +13,6 @@ async function handleDelete() {
         console.error("Error deleting message:", error);
     }
 }
-
 //更新msg
 async function handleUpdate() {
     document.querySelectorAll("li button:last-of-type").forEach(item => {
@@ -31,14 +29,14 @@ async function handleUpdate() {
     message_list.appendChild(field);
     field.querySelector(".update-button").addEventListener("click", async () => {
         const comment = field.querySelector("#comment").value;
-        if (!comment) {
-            alert(`Hi ${name}! Your updated comment is empty`);
-            return;
-        }
+        if (!comment) return alert(`Hi ${name}! Your updated comment is empty`);
         try {
             const response = await axios.put(
                 `http://localhost:8080/messages/${this.getAttribute("data-id")}`,
-                { name: name, message: comment },
+                {
+                    name: name,
+                    message: comment,
+                },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -46,18 +44,18 @@ async function handleUpdate() {
                 }
             );
             message_list.removeChild(field);
-            response.status === 201 ? getMessages() : null;
+            if (response.status === 201) getMessages();
         } catch (error) {
             console.error("Error updating message:", error);
         }
     });
 }
-
 // display messages
 async function getMessages() {
     try {
         const response = await axios.get("http://localhost:8080/messages");
         const messages = response.data;
+        console.log("user list", messages);
         const messageList = document.getElementById("message-list");
         messageList.innerHTML = "";
         messages.forEach(message => {
@@ -75,7 +73,6 @@ async function getMessages() {
         console.error("Error displaying message:", error);
     }
 }
-
 // post message
 async function handleSubmitMessage(event) {
     event.preventDefault();
