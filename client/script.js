@@ -13,8 +13,16 @@ async function handleDelete() {
         console.error("Error deleting message:", error);
     }
 }
+
 //更新msg
 async function handleUpdate() {
+    function handleKeyUp(event) {
+        if (event.keyCode === 27) {
+            document.removeEventListener("keyup", handleKeyUp);
+            message_list.removeChild(field);
+            getMessages();
+        }
+    }
     document.querySelectorAll("li button:last-of-type").forEach(item => {
         item.disabled = true;
         item.className = "button_disabled";
@@ -27,6 +35,7 @@ async function handleUpdate() {
     <input type='text' id='comment' name='comment' placeholder='Comment'/>
     <button class="update-button">Finish edit</button>`;
     message_list.appendChild(field);
+    document.addEventListener("keyup", handleKeyUp);
     field.querySelector(".update-button").addEventListener("click", async () => {
         const comment = field.querySelector("#comment").value;
         if (!comment) return alert(`Hi ${name}! Your updated comment is empty`);
@@ -89,10 +98,8 @@ async function handleSubmitMessage(event) {
                 },
             }
         );
-        if (response.status === 201) {
-            getMessages();
-            this.reset();
-        }
+        if (response.status === 201) this.reset();
+        getMessages();
     } catch (error) {
         console.error("Error occurred while submitting message:", error);
     }
