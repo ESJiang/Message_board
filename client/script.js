@@ -23,7 +23,7 @@ async function handleUpdate() {
             getMessages();
         }
     }
-    document.querySelectorAll("li button:last-of-type").forEach(item => {
+    document.querySelectorAll("li>button:last-of-type").forEach(item => {
         item.disabled = true;
         item.className = "button_disabled";
     });
