@@ -1,10 +1,11 @@
-const express = require("express");
-const cors = require("cors");
-const app = express();
+const express = require("express"),
+    cors = require("cors"),
+    app = express(),
+    messages = [{ id: 1, name: "John", message: "I love programming!" }];
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-let messages = [{ id: 1, name: "John", message: "I love programming!" }];
 
 function getMessageById(messageId) {
     return messages.find(msg => msg.id === messageId);
@@ -37,11 +38,15 @@ app.get("/messages/:id", (req, res) => {
     message ? res.status(200).json(message) : handleErrorMessage(res, messageId);
 });
 
+function getMaxId() {
+    return Math.max(...messages.map(msg => msg.id), 0) + 1;
+}
+
 //POST: 添加留言
 app.post("/messages", (req, res) => {
     if (!handleParameters(req, res)) return;
     const newMessage = {
-        id: messages.length + 1,
+        id: getMaxId(),
         name: req.body.name,
         message: req.body.message,
     };

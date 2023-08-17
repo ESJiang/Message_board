@@ -3,6 +3,7 @@ function judgeContinue(target) {
     if (judgeDelete === null || !(judgeDelete.trim().toLowerCase() === "y")) return false;
     return true;
 }
+
 // 删除msg
 async function handleDelete() {
     try {
