@@ -8,7 +8,7 @@ function judgeContinue(target) {
 async function handleDelete() {
     try {
         if (!judgeContinue(this)) return;
-        const response = await axios.delete(`http://localhost:8080/messages/${this.getAttribute("data-id")}`);
+        const response = await axios.delete(`//localhost:8080/messages/${this.getAttribute("data-id")}`);
         if (response.status === 201) getMessages();
     } catch (error) {
         console.error("Error deleting message:", error);
@@ -36,13 +36,15 @@ async function handleUpdate() {
     <input type='text' id='comment' name='comment' placeholder='Comment'/>
     <button class="update-button">Finish edit</button>`;
     message_list.appendChild(field);
+    const comment_element = field.querySelector("#comment");
+    comment_element.focus();
     document.addEventListener("keyup", handleKeyUp);
     field.querySelector(".update-button").addEventListener("click", async () => {
-        const comment = field.querySelector("#comment").value;
+        const comment = comment_element.value;
         if (!comment) return alert(`Hi ${name}! Your updated comment is empty`);
         try {
             const response = await axios.put(
-                `http://localhost:8080/messages/${this.getAttribute("data-id")}`,
+                `//localhost:8080/messages/${this.getAttribute("data-id")}`,
                 {
                     name: name,
                     message: comment,
@@ -63,7 +65,7 @@ async function handleUpdate() {
 // display messages
 async function getMessages() {
     try {
-        const response = await axios.get("http://localhost:8080/messages");
+        const response = await axios.get("//localhost:8080/messages");
         const messages = response.data;
         console.log("user list", messages);
         const messageList = document.getElementById("message-list");
@@ -88,7 +90,7 @@ async function handleSubmitMessage(event) {
     event.preventDefault();
     try {
         const response = await axios.post(
-            "http://localhost:8080/messages",
+            "//localhost:8080/messages",
             {
                 name: this.children[0].value,
                 message: this.children[1].value,
@@ -99,8 +101,10 @@ async function handleSubmitMessage(event) {
                 },
             }
         );
-        if (response.status === 201) this.reset();
-        getMessages();
+        if (response.status === 201) {
+            this.reset();
+            getMessages();
+        }
     } catch (error) {
         console.error("Error occurred while submitting message:", error);
     }

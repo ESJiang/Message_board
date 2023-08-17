@@ -1,11 +1,21 @@
 const express = require("express"),
     cors = require("cors"),
+    fs = require("fs"),
     app = express(),
-    messages = [{ id: 1, name: "John", message: "I love programming!" }];
+    { messages } = require("./messages.json");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+async function writeMessagesFile() {
+    try {
+        await fs.promises.writeFile("./messages.json", JSON.stringify({ messages }, null, 4));
+        console.log("File written successfully.");
+    } catch (err) {
+        console.error("Error writing file:", err);
+    }
+}
 
 function getMessageById(messageId) {
     return messages.find(msg => msg.id === messageId);
@@ -43,7 +53,7 @@ function getMaxId() {
 }
 
 //POST: 添加留言
-app.post("/messages", (req, res) => {
+app.post("/messages", async (req, res) => {
     if (!handleParameters(req, res)) return;
     const newMessage = {
         id: getMaxId(),
@@ -52,6 +62,7 @@ app.post("/messages", (req, res) => {
     };
     messages.push(newMessage);
     console.log("newMessage", newMessage);
+    await writeMessagesFile();
     res.status(201).json({ msg: "create successfully", newData: newMessage });
 });
 
@@ -64,11 +75,12 @@ app.delete("/messages/:id", (req, res) => {
         const deletedMessage = messages.splice(messageIndex, 1)[0];
         console.log("deletedMessage", deletedMessage);
         res.status(201).json({ msg: "delete successfully", deleteData: deletedMessage });
+        writeMessagesFile();
     } else handleErrorMessage(res, messageId);
 });
 
 //Update:更新留言
-app.put("/messages/:id", (req, res) => {
+app.put("/messages/:id", async (req, res) => {
     if (!handleParameters(req, res)) return;
     const messageId = parseInt(req.params.id);
     const messageToUpdate = getMessageById(messageId);
@@ -76,6 +88,7 @@ app.put("/messages/:id", (req, res) => {
         Object.assign(messageToUpdate, req.body);
         console.log("updateMessage", messageToUpdate);
         res.status(201).json({ msg: "update successfully", updateData: messageToUpdate });
+        await writeMessagesFile();
     } else handleErrorMessage(res, messageId);
 });
 
