@@ -8,9 +8,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-async function writeMessagesFile() {
+function writeMessagesFile() {
     try {
-        await fs.promises.writeFile("./messages.json", JSON.stringify({ messages }, null, 4));
+        fs.writeFile("./messages.json", JSON.stringify({ messages }, null, 4));
         console.log("File written successfully.");
     } catch (err) {
         console.error("Error writing file:", err);
@@ -67,7 +67,7 @@ app.post("/messages", async (req, res) => {
 });
 
 //DELETE:删除留言
-app.delete("/messages/:id", (req, res) => {
+app.delete("/messages/:id", async (req, res) => {
     const messageId = parseInt(req.params.id);
     const messageIndex = messages.findIndex(msg => msg.id === messageId);
     if (messageIndex !== -1) {
@@ -75,7 +75,7 @@ app.delete("/messages/:id", (req, res) => {
         const deletedMessage = messages.splice(messageIndex, 1)[0];
         console.log("deletedMessage", deletedMessage);
         res.status(201).json({ msg: "delete successfully", deleteData: deletedMessage });
-        writeMessagesFile();
+        await writeMessagesFile();
     } else handleErrorMessage(res, messageId);
 });
 
